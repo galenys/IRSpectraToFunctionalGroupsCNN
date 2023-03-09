@@ -1,3 +1,4 @@
+from matplotlib import pyplot as plt
 import torch
 import numpy as np
 import torch.nn as nn
@@ -6,8 +7,8 @@ import pandas as pd
 from model import Model
 from utils import *
 
-NUM_EPOCHS = 1000
-BATCH_NUMBER = 10
+NUM_EPOCHS = 500
+BATCH_NUMBER = 5
 
 # batch size, channels, length
 # input_tensor = torch.randn(10, 1, 1000)
@@ -56,21 +57,30 @@ y_pred = model(x_test)
 accuracy = (y_pred.round() == y_test).sum().item() / len(y_test)
 print(f"Accuracy before training: {accuracy}")
 
+train_losses, test_losses = [], []
 for epoch in range(NUM_EPOCHS):
+    model.train()
     for i, batch_indices in enumerate(batch_split_indices):
         x_batch = x_train[batch_indices]
         y_batch = y_train[batch_indices]
         y_pred = model(x_batch)
-        loss = critereon(y_pred, y_batch)
         optimizer.zero_grad()
+        loss = critereon(y_pred, y_batch)
         loss.backward()
         optimizer.step()
+        # train_losses.append(loss.item())
     with torch.no_grad():
-        y_pred = model(x_test)        
-        print(f'Epoch: {epoch}, Train loss: {loss.item()}, Test loss: {critereon(y_pred, y_test).item()}')
+        y_pred = model(x_test)
+        test_loss = critereon(y_pred, y_test)
+        test_losses.append(test_loss.item())
+        print(f'Epoch: {epoch}, Train loss: {loss.item()}, Test loss: {test_loss.item()}')
+
+# Display the loss
+# plt.plot([i for i in range(NUM_EPOCHS * BATCH_NUMBER)], train_losses, label='Training loss')
+plt.plot([i for i in range(NUM_EPOCHS)], test_losses, label='Training loss')
+plt.show()
  
 # Test the model after training
 y_pred = model(x_test)
 accuracy = (y_pred.round() == y_test).sum().item() / len(y_test)
 print(f"Accuracy after training: {accuracy}")
-
