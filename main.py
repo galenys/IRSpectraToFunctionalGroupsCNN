@@ -7,7 +7,7 @@ import pandas as pd
 from model import Model
 from utils import *
 
-NUM_EPOCHS = 500
+NUM_EPOCHS = 5
 BATCH_NUMBER = 5
 
 # batch size, channels, length
@@ -77,10 +77,17 @@ for epoch in range(NUM_EPOCHS):
 
 # Display the loss
 # plt.plot([i for i in range(NUM_EPOCHS * BATCH_NUMBER)], train_losses, label='Training loss')
-plt.plot([i for i in range(NUM_EPOCHS)], test_losses, label='Training loss')
-plt.show()
- 
+# plt.plot([i for i in range(NUM_EPOCHS)], test_losses, label='Training loss')
+# plt.show()
+
 # Test the model after training
 y_pred = model(x_test)
 accuracy = (y_pred.round() == y_test).sum().item() / len(y_test)
 print(f"Accuracy after training: {accuracy}")
+
+# Write output
+out1 = pd.DataFrame(y_pred.detach().cpu().numpy())
+out1.to_csv("y_pred.csv", index = False)
+
+out2 = pd.DataFrame(y_test.detach().cpu().numpy())
+out2.to_csv("y_test.csv", index = False)
