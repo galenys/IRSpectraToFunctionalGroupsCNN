@@ -7,7 +7,7 @@ import pandas as pd
 from model import Model
 from utils import *
 
-NUM_EPOCHS = 5
+NUM_EPOCHS = 500
 BATCH_NUMBER = 5
 
 # batch size, channels, length
