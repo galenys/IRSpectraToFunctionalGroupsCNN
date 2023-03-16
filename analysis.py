@@ -24,3 +24,5 @@ plt.title("Receiver Operating Characteristic (ROC) Curve")
 plt.legend()
 plt.savefig("roc_curve.png")
 plt.show()
+
+print(metrics.confusion_matrix(y_test, y_pred))
