@@ -81,10 +81,8 @@ plt.plot([i for i in range(NUM_EPOCHS)], test_losses, label='Training loss')
 plt.show()
 
 # Test the model after training
-y_pred = model(x_test).round()
-#accuracy = (y_pred.round() == y_test).sum().item() / len(y_test)
-#accuracy = ((y_pred.round() == y_test).sum(dim=1) == 12).sum().item() / len(y_test)
-accuracy = ((y_pred == y_test).sum(dim=0))/len(y_test)
+y_pred = model(x_test)
+accuracy = ((y_pred.round() == y_test).sum(dim=0))/len(y_test)
 print(f"Accuracy after training: {accuracy}")
 
 # Write output
