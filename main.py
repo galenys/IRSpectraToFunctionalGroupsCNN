@@ -7,6 +7,7 @@ import pandas as pd
 from model import Model
 from utils import *
 import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 NUM_EPOCHS = 200
 BATCH_NUMBER = 5
@@ -85,3 +86,10 @@ y_pred = model(x_test).round()
 #accuracy = ((y_pred.round() == y_test).sum(dim=1) == 12).sum().item() / len(y_test)
 accuracy = ((y_pred == y_test).sum(dim=0))/len(y_test)
 print(f"Accuracy after training: {accuracy}")
+
+# Write output
+out1 = pd.DataFrame(y_pred.detach().cpu().numpy())
+out1.to_csv("y_pred.csv", index = False)
+
+out2 = pd.DataFrame(y_test.detach().cpu().numpy())
+out2.to_csv("y_test.csv", index = False)
