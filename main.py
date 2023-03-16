@@ -14,7 +14,7 @@ BATCH_NUMBER = 5
 # batch size, channels, length
 # input_tensor = torch.randn(10, 1, 1000)
 
-dataset = pd.read_csv('dataset.csv').to_numpy()
+dataset = pd.read_csv('datasetMulti.csv').to_numpy()
 
 # CUDA device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
