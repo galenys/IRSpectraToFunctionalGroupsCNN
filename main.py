@@ -6,8 +6,9 @@ import pandas as pd
 
 from model import Model
 from utils import *
-
-NUM_EPOCHS = 500
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+NUM_EPOCHS = 200
 BATCH_NUMBER = 5
 
 # batch size, channels, length
@@ -21,18 +22,14 @@ print('Device: {0}'.format(device))
 
 model = Model()
 model.to(device)
-
 # Remove any rows with NaN values
 dataset = dataset[~np.isnan(dataset).any(axis=1)]
-
 # The last column is the class label
-x, y = dataset[:, :-1], dataset[:, -1]
-
+x, y = dataset[:, :-12], dataset[:, 1000:]
 x = torch.from_numpy(x).float()
 y = torch.from_numpy(y).float()
-
 x = x.view(-1, 1, 1000)
-y = y.view(-1, 1)
+y = y.view(-1, 12)
 
 # Split the data into test and train (shuffles the data)
 x_test, x_train, y_test, y_train = split_dataset(x, y, test_proportion=0.2)
@@ -53,8 +50,10 @@ x_train = x_train.to(device)
 y_train = y_train.to(device)
 
 # Test the model before training
-y_pred = model(x_test)
-accuracy = (y_pred.round() == y_test).sum().item() / len(y_test)
+y_pred = model(x_test).round()
+#accuracy = (y_pred.round() == y_test).sum().item() / len(y_test)
+#accuracy = ((y_pred.round() == y_test).sum(dim=1) == 12).sum().item() / len(y_test)
+accuracy = ((y_pred == y_test).sum(dim=0))/len(y_test)
 print(f"Accuracy before training: {accuracy}")
 
 train_losses, test_losses = [], []
@@ -77,17 +76,12 @@ for epoch in range(NUM_EPOCHS):
 
 # Display the loss
 # plt.plot([i for i in range(NUM_EPOCHS * BATCH_NUMBER)], train_losses, label='Training loss')
-# plt.plot([i for i in range(NUM_EPOCHS)], test_losses, label='Training loss')
-# plt.show()
+plt.plot([i for i in range(NUM_EPOCHS)], test_losses, label='Training loss')
+plt.show()
 
 # Test the model after training
-y_pred = model(x_test)
-accuracy = (y_pred.round() == y_test).sum().item() / len(y_test)
+y_pred = model(x_test).round()
+#accuracy = (y_pred.round() == y_test).sum().item() / len(y_test)
+#accuracy = ((y_pred.round() == y_test).sum(dim=1) == 12).sum().item() / len(y_test)
+accuracy = ((y_pred == y_test).sum(dim=0))/len(y_test)
 print(f"Accuracy after training: {accuracy}")
-
-# Write output
-out1 = pd.DataFrame(y_pred.detach().cpu().numpy())
-out1.to_csv("y_pred.csv", index = False)
-
-out2 = pd.DataFrame(y_test.detach().cpu().numpy())
-out2.to_csv("y_test.csv", index = False)
